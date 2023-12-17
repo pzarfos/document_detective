@@ -1,0 +1,6 @@
+chromadb==0.4.20
+gpt4all==2.0.2
+langchain==0.0.350
+tensorflow-macos==2.15.0
+tensorflow-metal==1.1.0
+unstructured==0.11.5
