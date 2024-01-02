@@ -54,7 +54,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-d",
-        "--directory",
+        "--docs",
         default="docs",
         help="Directory containing documents",
         required=False,
@@ -77,19 +77,20 @@ def get_args():
         "--temperature",
         default=0.2,
         type=float,
-        help="Model temperature (0.0-1.0, a higher number has more hallucinations)",
+        help="Model temperature (0.0-5.0, above 1.0 may cause hallucinations)",
         required=False,
     )
 
     args = parser.parse_args()
-    return [args.directory, args.model, args.query, args.temperature]
+    return [args.docs, args.model, args.query, args.temperature]
 
 
 def main():
     [directory, model, initial_query, temperature] = get_args()
 
     # Load the files in the specified directory and split it into chunks
-    loader = DirectoryLoader(directory, glob="**/*")
+    print(f"Loading model {model} and files from {directory} directory...")
+    loader = DirectoryLoader(directory, glob="**/*", use_multithreading=True)
     data = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
     all_splits = text_splitter.split_documents(data)
@@ -103,6 +104,7 @@ def main():
     while True:
         if initial_query:
             # Question was passed in as an argument
+            print("Thinking...")
             query = initial_query
         else:
             # Prompt the user for a question
